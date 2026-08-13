@@ -11,11 +11,21 @@ metadata:
   namespace: backstage-poc
 spec:
   source:
-    type: Binary
+    type: Git
+    git:
+      uri: https://github.com/byron-velasco/enterprise-service-inventory.git
+      ref: main
   strategy:
     type: Docker
     dockerStrategy:
       dockerfilePath: Dockerfile
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 3Gi
   output:
     to:
       kind: ImageStreamTag
