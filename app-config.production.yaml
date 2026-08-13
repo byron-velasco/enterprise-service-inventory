@@ -2,16 +2,16 @@
 # Corre desde /app dentro del contenedor (ver Dockerfile)
 
 app:
-  baseUrl: https://BACKSTAGE_ROUTE_HOST  # reemplazar con el host real del Route de OpenShift
+  baseUrl: https://backstage-backstage-poc.apps-crc.testing  # reemplazar con el host real del Route de OpenShift
 
 backend:
-  baseUrl: https://BACKSTAGE_ROUTE_HOST
+  baseUrl: https://backstage-backstage-poc.apps-crc.testing
   listen:
     port: 7007
   csp:
     connect-src: ["'self'", 'http:', 'https:']
   cors:
-    origin: https://BACKSTAGE_ROUTE_HOST
+    origin: https://backstage-backstage-poc.apps-crc.testing
   reading:
     allow:
       - host: www.dneonline.com   # quitar si no vas a usar el ejemplo SOAP publico en QA
@@ -23,6 +23,7 @@ backend:
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       database: ${POSTGRES_DB}
+    pluginDivisionMode: schema
 
 # Catalogo: rutas relativas a /app (raiz del contenedor en produccion),
 # distinto de la ruta en desarrollo (../../catalog) porque ahi corre desde
