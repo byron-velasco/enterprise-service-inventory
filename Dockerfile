@@ -43,7 +43,10 @@ COPY --from=build /app/packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
 RUN corepack enable
-RUN yarn workspaces focus --all --production
+# umask 0002: los archivos que yarn instale ya nacen con permisos de grupo=owner,
+# evitando tener que recorrer node_modules completo despues con chmod -R (esa
+# operacion sobre miles de archivos pequenos es la que agota la memoria del build)
+RUN umask 0002 && yarn workspaces focus --all --production
 
 COPY --from=build /app/packages/backend/dist/bundle.tar.gz .
 COPY --from=build /app/catalog ./catalog
@@ -52,8 +55,11 @@ COPY --from=build /app/app-config.production.yaml ./
 
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
-# OpenShift corre contenedores con UID aleatorio, no root: aseguramos permisos de grupo
-RUN chgrp -R 0 /app && chmod -R g=u /app
+# OpenShift corre contenedores con UID aleatorio, no root: aseguramos permisos de grupo.
+# Ya NO tocamos node_modules aqui (nacio con permisos correctos gracias al umask arriba),
+# solo las carpetas/archivos que SI se generaron despues sin ese umask.
+RUN chgrp -R 0 /app/packages /app/catalog /app/app-config.yaml /app/app-config.production.yaml \
+    && chmod -R g=u /app/packages /app/catalog /app/app-config.yaml /app/app-config.production.yaml
 
 ENV NODE_ENV=production
 EXPOSE 7007
