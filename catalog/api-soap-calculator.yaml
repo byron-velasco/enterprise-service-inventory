@@ -1,0 +1,32 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: calculator-soap-service
+  description: Servicio SOAP de ejemplo público (operaciones aritméticas)
+  tags:
+    - soap
+    - ejemplo-publico
+  links:
+    - url: http://www.dneonline.com/calculator.asmx?WSDL
+      title: WSDL del servicio
+spec:
+  type: service
+  lifecycle: production
+  owner: equipo-ejemplo
+  providesApis:
+    - calculator-soap-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: calculator-soap-api
+  description: API SOAP con operaciones Add, Subtract, Multiply, Divide
+  tags:
+    - soap
+    - wsdl
+spec:
+  type: soap
+  lifecycle: production
+  owner: equipo-ejemplo
+  definition:
+    $text: http://www.dneonline.com/calculator.asmx?WSDL

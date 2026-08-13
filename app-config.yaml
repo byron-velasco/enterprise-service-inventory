@@ -131,6 +131,12 @@ catalog:
     #   rules:
     #     - allow: [User, Group]
 
+    # POC: servicios de ejemplo (REST y SOAP) para validar el catálogo
+    - type: file
+      target: ../../catalog/api-rest-consultarproducto.yaml
+    - type: file
+      target: ../../catalog/api-soap-calculator.yaml
+
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 

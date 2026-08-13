@@ -1,0 +1,111 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: adrianahoyos-productos-service
+  description: Servicio REST que expone información de productos (consulta por código)
+  tags:
+    - rest
+    - productos
+  links:
+    - url: https://apiweb.adrianahoyos.com/api/AdrianaHoyos/Data/consultarProducto/AH12200
+      title: Endpoint de ejemplo (consultarProducto)
+spec:
+  type: service
+  lifecycle: production
+  owner: equipo-ejemplo
+  providesApis:
+    - adrianahoyos-productos-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: adrianahoyos-productos-api
+  description: API REST para consulta de productos por código
+  tags:
+    - rest
+    - json
+spec:
+  type: openapi
+  lifecycle: production
+  owner: equipo-ejemplo
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: API Consulta de Productos - Adriana Hoyos
+      version: "1.0"
+      description: Consulta información de un producto por su código
+    servers:
+      - url: https://apiweb.adrianahoyos.com/api/AdrianaHoyos
+    paths:
+      /Data/consultarProducto/{codigo}:
+        get:
+          summary: Consultar producto por código
+          parameters:
+            - name: codigo
+              in: path
+              required: true
+              schema:
+                type: string
+              example: AH12200
+          responses:
+            "200":
+              description: Producto encontrado
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      codigo:
+                        type: integer
+                      mensaje:
+                        type: string
+                      producto:
+                        type: object
+                        properties:
+                          codigoProducto:
+                            type: string
+                          descripcionEn:
+                            type: string
+                          descripcionEs:
+                            type: string
+                          imagenUrl:
+                            type: string
+                            nullable: true
+                          linedrawingUrl:
+                            type: string
+                          medidas:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                productCode:
+                                  type: string
+                                measure:
+                                  type: string
+                                measureUom:
+                                  type: string
+                                measureValue:
+                                  type: string
+                          atributos:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                productCode:
+                                  type: string
+                                attributeName:
+                                  type: string
+                                category:
+                                  type: string
+                                categoryEs:
+                                  type: string
+                                description:
+                                  type: string
+                                qty:
+                                  type: number
+                                units:
+                                  type: string
+                                intiaroMatch:
+                                  type: string

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  namespace: backstage-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+  template:
+    metadata:
+      labels:
+        app: backstage
+    spec:
+      containers:
+        - name: backstage
+          # Imagen generada por el BuildConfig (openshift/buildconfig.yaml)
+          # via 'oc start-build backstage --from-dir=. --follow'
+          image: image-registry.openshift-image-registry.svc:5000/backstage-poc/backstage:latest
+          ports:
+            - containerPort: 7007
+          env:
+            - name: POSTGRES_HOST
+              value: backstage-postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgres-secret
+                  key: POSTGRES_DB
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 7007
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backstage
+  namespace: backstage-poc
+spec:
+  selector:
+    app: backstage
+  ports:
+    - port: 7007
+      targetPort: 7007
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: backstage
+  namespace: backstage-poc
+spec:
+  to:
+    kind: Service
+    name: backstage
+  port:
+    targetPort: 7007
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

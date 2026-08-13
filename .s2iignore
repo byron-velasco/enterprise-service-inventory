@@ -1,0 +1,12 @@
+﻿node_modules/
+**/node_modules/
+.yarn/cache/
+.yarn/install-state.gz
+.yarn/unplugged/
+.git/
+dist/
+dist-types/
+**/dist/
+coverage/
+.cache/
+*.log
