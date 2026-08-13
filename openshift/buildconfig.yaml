@@ -21,11 +21,11 @@ spec:
       dockerfilePath: Dockerfile
   resources:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 100m
+      memory: 256Mi
     limits:
-      cpu: "2"
-      memory: 3Gi
+      cpu: "1"
+      memory: 1500Mi
   output:
     to:
       kind: ImageStreamTag
