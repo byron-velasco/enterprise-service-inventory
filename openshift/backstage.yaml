@@ -42,11 +42,11 @@ spec:
                   key: POSTGRES_DB
           resources:
             requests:
-              cpu: 250m
-              memory: 1Gi
+              cpu: 100m
+              memory: 256Mi
             limits:
               cpu: 1
-              memory: 2Gi
+              memory: 1500Mi
           readinessProbe:
             httpGet:
               path: /healthcheck
