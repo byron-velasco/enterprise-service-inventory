@@ -25,11 +25,25 @@ FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-# libsecret es requerido en runtime tambien (no solo en build) por @backstage/backend-defaults
+# libsecret y herramientas de compilacion son requeridas en runtime tambien,
+# porque yarn workspaces focus puede necesitar recompilar modulos nativos
 RUN apt-get update && apt-get install -y \
-    libsecret-1-0 \
+    libsecret-1-0 python3 make g++ pkg-config libsecret-1-dev \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+# El bundle.tar.gz NO incluye node_modules - hay que instalarlos aqui usando
+# el skeleton.tar.gz (contiene todos los package.json del monorepo) para que
+# yarn instale solo las dependencias de produccion, sin devDependencies pesadas
+COPY --from=build /app/yarn.lock ./
+COPY --from=build /app/package.json ./
+COPY --from=build /app/.yarnrc.yml ./
+COPY --from=build /app/.yarn ./.yarn
+COPY --from=build /app/packages/backend/dist/skeleton.tar.gz ./
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+RUN corepack enable
+RUN yarn workspaces focus --all --production
 
 COPY --from=build /app/packages/backend/dist/bundle.tar.gz .
 COPY --from=build /app/catalog ./catalog
