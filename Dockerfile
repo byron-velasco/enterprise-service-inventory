@@ -55,11 +55,16 @@ COPY --from=build /app/app-config.production.yaml ./
 
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
-# OpenShift corre contenedores con UID aleatorio, no root: aseguramos permisos de grupo.
-# Ya NO tocamos node_modules aqui (nacio con permisos correctos gracias al umask arriba),
-# solo las carpetas/archivos que SI se generaron despues sin ese umask.
-RUN chgrp -R 0 /app/packages /app/catalog /app/app-config.yaml /app/app-config.production.yaml \
-    && chmod -R g=u /app/packages /app/catalog /app/app-config.yaml /app/app-config.production.yaml
+# OpenShift corre contenedores con UID aleatorio, no root: aseguramos permisos de grupo
+# en TODO /app (incluyendo /app mismo) menos node_modules (nacio con permisos correctos
+# gracias al umask arriba, y recorrerlo de nuevo aqui es lo que agotaba la memoria del build)
+RUN chgrp 0 /app && chmod g+rx /app \
+    && for d in /app/*; do \
+         case "$d" in \
+           */node_modules) ;; \
+           *) chgrp -R 0 "$d" && chmod -R g=u "$d" ;; \
+         esac; \
+       done
 
 ENV NODE_ENV=production
 EXPOSE 7007
