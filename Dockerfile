@@ -19,7 +19,7 @@ COPY . .
 
 RUN corepack enable
 RUN YARN_TASK_POOL_CONCURRENCY=1 yarn install
-RUN yarn build:backend --config /app/app-config.yaml --config /app/app-config.production.yaml
+RUN NODE_OPTIONS="--max-old-space-size=1536" yarn build:backend --config /app/app-config.yaml --config /app/app-config.production.yaml
 
 FROM node:22-bookworm-slim
 
