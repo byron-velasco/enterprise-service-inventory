@@ -25,6 +25,14 @@ backend:
       database: ${POSTGRES_DB}
     pluginDivisionMode: schema
 
+# Solo para esta POC: habilita el login de invitado fuera de un ambiente de
+# desarrollo. En un despliegue real de QA/produccion, reemplazar por un
+# proveedor de auth real (GitHub, Google, SAML, etc.) y quitar esto.
+auth:
+  providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
+
 # Catalogo: rutas relativas a /app (raiz del contenedor en produccion),
 # distinto de la ruta en desarrollo (../../catalog) porque ahi corre desde
 # packages/backend dentro del monorepo, no desde el bundle empaquetado.
