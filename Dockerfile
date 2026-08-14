@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 COPY . .
 
 RUN corepack enable
-RUN YARN_CHILD_CONCURRENCY=1 yarn install
+RUN YARN_TASK_POOL_CONCURRENCY=1 yarn install
 RUN yarn build:backend --config /app/app-config.yaml --config /app/app-config.production.yaml
 
 FROM node:22-bookworm-slim
