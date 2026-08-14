@@ -46,7 +46,7 @@ RUN corepack enable
 # umask 0002: los archivos que yarn instale ya nacen con permisos de grupo=owner,
 # evitando tener que recorrer node_modules completo despues con chmod -R (esa
 # operacion sobre miles de archivos pequenos es la que agota la memoria del build)
-RUN umask 0002 && yarn workspaces focus --all --production
+RUN umask 0002 && YARN_TASK_POOL_CONCURRENCY=1 yarn workspaces focus --all --production
 
 COPY --from=build /app/packages/backend/dist/bundle.tar.gz .
 COPY --from=build /app/catalog ./catalog
